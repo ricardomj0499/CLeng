@@ -1,4 +1,12 @@
 #include <gtk/gtk.h>
+#include <limits.h> /* PATH_MAX */
+#include <stdio.h>
+#include <stdlib.h>
+
+char buf1[PATH_MAX];
+char buf[PATH_MAX];
+
+
 void cooldown(float seconds)
 {
     clock_t start = clock();
@@ -18,7 +26,7 @@ void mover(int cant, GtkWidget *layout,GtkWidget *window, GtkWidget *image2)
 	int x = 220;
 	int a;
 	for (a = 0; a < cant; a = a + 1){
-			image = gtk_image_new_from_file("/home/ricardo/Desktop/tec/Lenguajes/C/CLeng/pacman1.png");
+			image = gtk_image_new_from_file(buf1);
 			gtk_layout_put(GTK_LAYOUT(layout), image, x, y);
             while(gtk_events_pending())
 	            gtk_main_iteration();
@@ -41,6 +49,9 @@ int main( int argc, char *argv[])
     GtkWidget *image2;
     GtkWidget *button;
 
+    char *pacman1 = realpath("pacman1.png", buf1);
+	char *maze = realpath("maze.jpg", buf);
+
     gtk_init(&argc, &argv);
 
     window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
@@ -53,13 +64,13 @@ int main( int argc, char *argv[])
     gtk_container_add(GTK_CONTAINER (window), layout);
     gtk_widget_show(layout);
 
-    image = gtk_image_new_from_file("/home/ricardo/Desktop/tec/Lenguajes/C/CLeng/maze.jpg");
+    image = gtk_image_new_from_file(buf);
     gtk_layout_put(GTK_LAYOUT(layout), image, 0, 0);
 
     g_signal_connect_swapped(G_OBJECT(window), "destroy",G_CALLBACK(gtk_main_quit), NULL);
     gtk_widget_show_all(window);
     cooldown(2);
-    image2 = gtk_image_new_from_file("/home/ricardo/Desktop/tec/Lenguajes/C/CLeng/pacman1.png");
+    image2 = gtk_image_new_from_file(buf1);
     mover(10,layout,window,image2);
     gtk_main();
 

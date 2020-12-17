@@ -17,31 +17,32 @@ BITMAP *pacman_up= NULL;
 BITMAP *pacman_down= NULL;
 BITMAP *temp = NULL;
 BITMAP *pacbuff = NULL;
-
+BITMAP *cocos = NULL;
 
 int dir = 0;
 int posx = 20*10;
-int posy = 20*10; 
+int posy = 20*10;
+int asustados = 0; 
 
 char tablero[FILASMAX][COLMAX] = {
  "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
- "X             XX             X",
+ "XC            XX            CX",
  "X XXX XXXXXX      XX XXXX XX X",
  "X XX       XXXX XXXX XXXX    X",
- "X    XX XX                XX X",
+ "X    XX XX     C          XX X",
  "X XX XX XXXXXXX XXXXXXXXX XX X",
  "X XX XX     X     X       XX X",
  "X XX XX XXXXXXXXXXXXX XXXXXX X",
- "                              ",
+ "A              C           C A",
  "X XXXXXXXX XXXXXXXXXXXXX X X X",
- "X                            X",
+ "XC                          CX",
  "X XXX XXXXXXX XXX XXXXXX XXX X",
- "X  XX                    X   X",
+ "X  XX          C         X   X",
  "XX XXX X XXXXXXXXXXXX X XX XXX",
  "XX     X   XXXXXXXX   X     XX",
  "X  XXXXXXX    XX    XXXXXXX  X",
  "X XXXXXXXXXXX XX XXXXXXXXXXX X",
- "X                            X",
+ "XC                          CX",
  "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
 
 };
@@ -65,12 +66,20 @@ void dibujar_tablero(){
     for(j = 0; j<COLMAX; j++){
       if (tablero[i][j] == 'X'){
         draw_sprite(buffer,muro,j*20,i*20);
+      }else if(tablero[i][j] == 'C'){
+        if(posy/20 == i && posx/20  == j){
+          tablero[i][j] = ' ';
+          asustados = 100;
+        }else{
+          draw_sprite(buffer,cocos,j*20,i*20);
+        }  
       }else{
         draw_sprite(buffer,muroFondo,j*20,i*20);
       }
     }
   }
 }
+
 
 void show_pantalla(){
   blit(buffer,screen,0,0,0,0,TAMANOX,TAMANOY);
@@ -103,6 +112,7 @@ int main(int argc, char *argv[]) {
   pacman_up = load_bitmap("pac_up.bmp",NULL);
   pacman_down = load_bitmap("pac_down.bmp",NULL);
   pacbuff = create_bitmap(20,20);
+  cocos = load_bitmap("comida.bmp",NULL);
   while(!key[KEY_ESC]){
     if(key[KEY_RIGHT]){
       dir  = 1;
@@ -114,11 +124,28 @@ int main(int argc, char *argv[]) {
       dir = 0;
     }
 
-    if(dir == 0) posx-=PACVEL;
-    if(dir == 1) posx+=PACVEL;
-    if(dir == 2) posy-=PACVEL;
-    if(dir == 3) posy+=PACVEL;
+    if(dir == 0) {
+      if(tablero[posy/20][(posx-20)/20] != 'X'){
+        posx-=PACVEL;}
+    }
+    if(dir == 1) {
+      if(tablero[posy/20][(posx+20)/20] != 'X'){
+        posx+=PACVEL;}
+    }
+    if(dir == 2) {
+      if(tablero[(posy-20)/20][posx/20] != 'X'){
+        posy-=PACVEL;}    
+    }
+    if(dir == 3) {
+      if(tablero[(posy+20)/20][posx/20] != 'X'){
+        posy+=PACVEL;}
+    }
 
+    if(posx<=-20){
+        posx=TAMANOX;
+    }else if(posx>=TAMANOX){
+        posx=-20;
+    }
     clear(buffer);
     clear(pacbuff);
     dibujar_tablero();

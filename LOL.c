@@ -1,4 +1,4 @@
-#include <allegro.h>
+ #include <allegro.h>
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -34,14 +34,14 @@ char tablero[FILASMAX][COLMAX] = {
 "XCXXCXXXCXCXXXCXXCX",
 "XCXCCCCCSXCCCCCCXCX",
 "XCXCXXCXXXXXCXXSXCX",
-"ACCCCCCCCCCCCCCCCCA",
+" CCCCCCCCCCCCCCCCC ",
 "XSXXCXCXXXXXCXCXXCX",
 "XCXXCXSXAAAXCXCXXSX",
 "XCCSCXCXXXXXCXCCCCX",
 "XCXXCXCCCCCCCXCXXCX",
 "XCCXCXCXXXXXCXSXCCX",
 "XXSXCCCCCXCCCCCXCXX",
-"ACCXCXXXCXSXXXCXCCA",
+" CCXCXXXCXSXXXCXCC ",
 "XCXXCXCCCXCCCXCXXCX",
 "XCCCCXCXCCCXCXCCCCX",
 "XCXCXXCXCXCXCXXCXCX",
@@ -91,6 +91,41 @@ void dibujar_tablero(){
   }
 }
 
+void openFile(){
+
+	//open and get the file handle
+	FILE* fh;
+	fh = fopen("config.txt", "r");
+
+	char a[150];
+	char b[150];
+	char formaSemillas[150];
+	char d[150]; 
+
+	int aa;
+	int bb;
+	int dd;
+
+	if (fh == NULL)
+	{
+		printf("El archivo Config no existe");
+	}
+
+	fgets(a,150,fh);
+	fgets(b,150,fh);
+	fgets(formaSemillas,150,fh);
+	fgets(d,150,fh);
+
+	aa = atoi(a);
+	bb = atoi(b);
+	dd = atoi(d);
+
+	printf("%d\n", aa);
+	printf("%d\n", bb);
+	printf("%s", formaSemillas);
+	printf("%d\n", dd);
+}
+
 
 int restar(){
 	for(int i = 0; i< FILASMAX; i++){
@@ -124,6 +159,7 @@ void move_pacman(){
 
 
 int main(int argc, char *argv[]) {
+  openFile();	
   allegro_init();
   install_keyboard();
   set_color_depth(32);
@@ -141,15 +177,22 @@ int main(int argc, char *argv[]) {
   semilla = load_bitmap("semilla.bmp",NULL);
 
   while(!key[KEY_ESC] && !restar()){
+    
+
     if(key[KEY_RIGHT]){
-      dir  = 1;
+    	if(tablero[posy/20][(posx+20)/20] != 'X'){
+      		dir  = 1;}
     }else if(key[KEY_UP]){
-      dir = 2;
+    	if(tablero[(posy-20)/20][posx/20] != 'X'){
+    		dir = 2;}
     }else if(key[KEY_DOWN]){
-      dir = 3;
+    	if(tablero[(posy+20)/20][posx/20] != 'X'){
+    		dir = 3;}
     }else if(key[KEY_LEFT]){
-      dir = 0;
+    	if(tablero[posy/20][(posx-20)/20] != 'X'){
+    		dir = 0;}
     }
+
 
     if(dir == 0) {
       if(tablero[posy/20][(posx-20)/20] != 'X'){
@@ -168,11 +211,18 @@ int main(int argc, char *argv[]) {
         posy+=PACVEL;}
     }
 
+    for (int i=0;i<=TAMANOY/20;i++){
+      for (int j=0; j<=TAMANOX/20;j++){
+        printf("%c,",tablero[i][j]);
+      }
+      printf("\n");
+    }
     if(posx<=-20){
         posx=TAMANOX;
     }else if(posx>=TAMANOX){
         posx=-20;
     }
+    
     clear(buffer);
     clear(pacbuff);
     dibujar_tablero();

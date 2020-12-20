@@ -25,6 +25,7 @@ int dir = 4;
 int posx = 20*9;
 int posy = 20*16;
 int asustados = 0; 
+int game = 1;
 
 char tablero[FILASMAX][COLMAX] = {
 "XXXXXXXXXXXXXXXXXXX",
@@ -157,8 +158,7 @@ void move_pacman(){
   draw_sprite(buffer,pacbuff,posx,posy);
 }
 
-
-int main(int argc, char *argv[]) {
+void start_game(){
   openFile();	
   allegro_init();
   install_keyboard();
@@ -176,9 +176,11 @@ int main(int argc, char *argv[]) {
   cocos = load_bitmap("assets/comida.bmp",NULL);
   semilla = load_bitmap("assets/semilla.bmp",NULL);
 
-  while(!key[KEY_ESC] && !restar()){
+  while(game && !restar()){
     
-
+    if (key[KEY_ESC]){
+      game = 0;
+    }
     if(key[KEY_RIGHT]){
     	if(tablero[posy/20][(posx+20)/20] != 'X'){
       		dir  = 1;}
@@ -249,8 +251,14 @@ int main(int argc, char *argv[]) {
     draw_sprite(buffer,pacbuff,posx,posy);
     show_pantalla();
     cooldown(0.075);
-
   }
+}
+
+int main(int argc, char *argv[]) {
+  while(game){
+    start_game();
+  }
+  
 
 }
 END_OF_MAIN(); 

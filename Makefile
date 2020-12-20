@@ -1,2 +1,2 @@
 pacman:
-	gcc -o main LOL.c `allegro-config --libs`
+	gcc -o main acuesqmur.c `allegro-config --libs`

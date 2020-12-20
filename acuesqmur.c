@@ -196,19 +196,31 @@ int main(int argc, char *argv[]) {
 
     if(dir == 0) {
       if(tablero[posy/20][(posx-20)/20] != 'X'){
-        posx-=PACVEL;}
+        posx-=PACVEL;
+        }else{
+          dir = 4;
+        }
     }
     if(dir == 1) {
       if(tablero[posy/20][(posx+20)/20] != 'X'){
-        posx+=PACVEL;}
+        posx+=PACVEL;
+        }else{
+          dir = 4;
+        }
     }
     if(dir == 2) {
       if(tablero[(posy-20)/20][posx/20] != 'X'){
-        posy-=PACVEL;}    
+        posy-=PACVEL;
+        }else{
+          dir = 4;
+        }    
     }
     if(dir == 3) {
       if(tablero[(posy+20)/20][posx/20] != 'X'){
-        posy+=PACVEL;}
+        posy+=PACVEL;
+        }else{
+          dir = 4;
+        }
     }
 
     for (int i=0;i<=TAMANOY/20;i++){
@@ -222,13 +234,21 @@ int main(int argc, char *argv[]) {
     }else if(posx>=TAMANOX){
         posx=-20;
     }
-    
+    clear(buffer);
+    dibujar_tablero();
+    if(dir != 4){
     clear(buffer);
     clear(pacbuff);
     dibujar_tablero();
     move_pacman();
     show_pantalla();
-    cooldown(0.15);
+    cooldown(0.15);}
+
+    clear(pacbuff);
+    blit(pacman_stop,pacbuff,0,0,0,0,20,20);
+    draw_sprite(buffer,pacbuff,posx,posy);
+    show_pantalla();
+    cooldown(0.075);
 
   }
 

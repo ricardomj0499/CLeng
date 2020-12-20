@@ -165,16 +165,16 @@ int main(int argc, char *argv[]) {
   set_color_depth(32);
   set_gfx_mode(GFX_AUTODETECT_WINDOWED,TAMANOX,TAMANOY,0,0);  
   buffer = create_bitmap(TAMANOX,TAMANOY);
-  muro = load_bitmap("brick.bmp",NULL);
-  muroFondo = load_bitmap("brick_fondo.bmp",NULL);
-  pacman_izq = load_bitmap("pac_izq.bmp",NULL);
-  pacman_der = load_bitmap("pac_der.bmp",NULL);
-  pacman_up = load_bitmap("pac_up.bmp",NULL);
-  pacman_down = load_bitmap("pac_down.bmp",NULL);
-  pacman_stop = load_bitmap("pac_stop.bmp",NULL);
+  muro = load_bitmap("assets/brick.bmp",NULL);
+  muroFondo = load_bitmap("assets/brick_fondo.bmp",NULL);
+  pacman_izq = load_bitmap("assets/pac_izq.bmp",NULL);
+  pacman_der = load_bitmap("assets/pac_der.bmp",NULL);
+  pacman_up = load_bitmap("assets/pac_up.bmp",NULL);
+  pacman_down = load_bitmap("assets/pac_down.bmp",NULL);
+  pacman_stop = load_bitmap("assets/pac_stop.bmp",NULL);
   pacbuff = create_bitmap(20,20);
-  cocos = load_bitmap("comida.bmp",NULL);
-  semilla = load_bitmap("semilla.bmp",NULL);
+  cocos = load_bitmap("assets/comida.bmp",NULL);
+  semilla = load_bitmap("assets/semilla.bmp",NULL);
 
   while(!key[KEY_ESC] && !restar()){
     

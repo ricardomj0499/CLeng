@@ -222,7 +222,6 @@ void coloca_semillas(){
   }
 }
  
-
 //Funcion que se encarga de abrir el archivo de configuracion "Config.txt" donde ingresa la informacion 
 //de la velocidad del pacman y los fantasmas, y la dispocionon de semillas en el mapa
 void openFile(){

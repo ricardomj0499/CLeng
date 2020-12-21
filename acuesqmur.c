@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <pthread.h>
 
 #define FILASMAX 23
 #define COLMAX 20
@@ -21,10 +22,18 @@ BITMAP *temp = NULL;
 BITMAP *pacbuff = NULL;
 BITMAP *cocos = NULL;
 BITMAP *semilla = NULL;
+BITMAP *naranja = NULL;
+BITMAP *naranjabuff = NULL;
+BITMAP *pared = NULL;
+
+pthread_t hilos[4];
+pthread_mutex_t sem;
 
 int dir = 4;
-int posx = 20*9;
-int posy = 20*16;
+int pacPosx = 20*9;
+int pacPosy = 20*16;
+int naranjaPosx = 20*10;
+int naranjaPosy = 20*9;
 int asustados = 0; 
 int game = 1;
 float pacvel = 100;
@@ -42,7 +51,7 @@ char tablero[FILASMAX][COLMAX] = {
 "XCXCCCCCCXCCCCCCXCX",
 "XCXCXXCXXXXXCXXCXCX",
 "ACCCCCCCCCCCCCCCCCA",
-"XCXXCXCXXXXXCXCXXCX",
+"XCXXCXCXDDDXCXCXXCX",
 "XCXXCXCXAAAXCXCXXCX",
 "XCCCCXCXXXXXCXCCCCX",
 "XCXXCXCCCCCCCXCXXCX",
@@ -68,7 +77,7 @@ char tableroAux[FILASMAX][COLMAX] = {
 "XCXCCCCCCXCCCCCCXCX",
 "XCXCXXCXXXXXCXXCXCX",
 "ACCCCCCCCCCCCCCCCCA",
-"XCXXCXCXXXXXCXCXXCX",
+"XCXXCXCXDDDXCXCXXCX",
 "XCXXCXCXAAAXCXCXXCX",
 "XCCCCXCXXXXXCXCCCCX",
 "XCXXCXCCCCCCCXCXXCX",
@@ -155,20 +164,22 @@ void dibujar_tablero(){
       if (tablero[i][j] == 'X'){
         draw_sprite(buffer,muro,j*20,i*20);
       }else if(tablero[i][j] == 'C'){
-        if(posy/20 == i && posx/20  == j){
+        if(pacPosy/20 == i && pacPosx/20  == j){
           tablero[i][j] = ' ';
           asustados = 100;
         }else{
           draw_sprite(buffer,cocos,j*20,i*20);
         }  
       }else if (tablero[i][j] == 'S'){
-         if(posy/20 == i && posx/20  == j){
+         if(pacPosy/20 == i && pacPosx/20  == j){
           tablero[i][j] = ' ';
           asustados = 100;
         }else{
           draw_sprite(buffer,semilla,j*20,i*20);
         }  
-      }else {
+      }else if(tablero[i][j] == 'D'){
+          draw_sprite(buffer,pared,j*20,i*20);
+        }else{
         draw_sprite(buffer,muroFondo,j*20,i*20);
       }
     }
@@ -193,6 +204,8 @@ void coloca_semillas(){
           tablero[a][b-1]='S';
         }else if(tablero[a-1][b]=='C'){
           tablero[a-1][b]='S';
+        }else if(tablero[a-2][b]=='C'){
+          tablero[a-2][b]='S';
         }
       }else{
         tablero[a][b]='S';
@@ -294,7 +307,12 @@ void move_pacman(){
   }else if(dir == 3){
     blit(pacman_down,pacbuff,0,0,0,0,20,20);
   }  
-  draw_sprite(buffer,pacbuff,posx,posy);
+  draw_sprite(buffer,pacbuff,pacPosx,pacPosy);
+  draw_sprite(buffer,naranjabuff,naranjaPosx,naranjaPosy);
+}
+
+void *pacMan (){
+  
 }
 
 //Funcion que mantienen el ciclo de juego por cada nivel
@@ -311,10 +329,13 @@ void start_game(){
   pacman_up = load_bitmap("assets/pac_up.bmp",NULL);
   pacman_down = load_bitmap("assets/pac_down.bmp",NULL);
   pacman_stop = load_bitmap("assets/pac_stop.bmp",NULL);
+  naranja = load_bitmap("assets/fantasma_naranja.bmp",NULL);
+  pared = load_bitmap("assets/pared.bmp",NULL);
   pacbuff = create_bitmap(20,20);
+  naranjabuff = create_bitmap(20,20);
   cocos = load_bitmap("assets/comida.bmp",NULL);
   semilla = load_bitmap("assets/semilla.bmp",NULL);
-  
+  blit(naranja,naranjabuff,0,0,0,0,20,20);
 
   while(game && !restart()){
     
@@ -323,45 +344,45 @@ void start_game(){
     }
     
     if(key[KEY_RIGHT]){
-    	if(tablero[posy/20][(posx+20)/20] != 'X'){
+    	if(tablero[pacPosy/20][(pacPosx+20)/20] != 'X'){
       		dir  = 1;
       }
     }else if(key[KEY_UP]){
-    	if(tablero[(posy-20)/20][posx/20] != 'X'){
+    	if(tablero[(pacPosy-20)/20][pacPosx/20] != 'X'){
     		dir = 2;}
     }else if(key[KEY_DOWN]){
-    	  if(tablero[(posy+20)/20][posx/20] != 'X'){
+    	  if(tablero[(pacPosy+20)/20][pacPosx/20] != 'X'){
     		  dir = 3;}
         }else if(key[KEY_LEFT]){
-    	    if(tablero[posy/20][(posx-20)/20] != 'X'){
+    	    if(tablero[pacPosy/20][(pacPosx-20)/20] != 'X'){
     		    dir = 0;
           }}
 
 
     if(dir == 0) {
-      if(tablero[posy/20][(posx-20)/20] != 'X'){
-        posx-=20;
+      if(tablero[pacPosy/20][(pacPosx-20)/20] != 'X'){
+        pacPosx-=20;
         }else{
           dir = 4;
         }
     }
     if(dir == 1) {
-      if(tablero[posy/20][(posx+20)/20] != 'X'){
-        posx+=20;
+      if(tablero[pacPosy/20][(pacPosx+20)/20] != 'X'){
+        pacPosx+=20;
         }else{
           dir = 4;
         }
     }
     if(dir == 2) {
-      if(tablero[(posy-20)/20][posx/20] != 'X'){
-        posy-=20;
+      if(tablero[(pacPosy-20)/20][pacPosx/20] != 'X'){
+        pacPosy-=20;
         }else{
           dir = 4;
         }    
     }
     if(dir == 3) {
-      if(tablero[(posy+20)/20][posx/20] != 'X'){
-        posy+=20;
+      if(tablero[(pacPosy+20)/20][pacPosx/20] != 'X'){
+        pacPosy+=20;
         }else{
           dir = 4;
         }
@@ -374,10 +395,10 @@ void start_game(){
       printf("\n");
     }printf("\n\n\n");
 */
-    if(posx<=-20){
-        posx=TAMANOX;
-    }else if(posx>=TAMANOX){
-        posx=-20;
+    if(pacPosx<=-20){
+        pacPosx=TAMANOX;
+    }else if(pacPosx>=TAMANOX){
+        pacPosx=-20;
     }
     clear(buffer);
     dibujar_tablero();
@@ -391,7 +412,7 @@ void start_game(){
 
     clear(pacbuff);
     blit(pacman_stop,pacbuff,0,0,0,0,20,20);
-    draw_sprite(buffer,pacbuff,posx,posy);
+    draw_sprite(buffer,pacbuff,pacPosx,pacPosy);
     show_pantalla();
     cooldown(0.075);
   }
@@ -400,8 +421,8 @@ void start_game(){
 //Funcion que setea las variables iniciales para empezar un nivel nuevo
 void rebuild_game(){
   dir = 4;
-  posx = 20*9;
-  posy = 20*16;
+  pacPosx = 20*9;
+  pacPosy = 20*16;
   asustados = 0;
   for (int i = 0;i<FILASMAX;i++){
       for(int j =0; j<COLMAX;j++){
@@ -411,11 +432,16 @@ void rebuild_game(){
 }
 
 
-
+void *sumar(){
+  for (int i=0;i<40;i++){
+  printf("test\n");}
+}
 //Funcion principal, que mantienen el ciclo principal del juego
 int main(int argc, char *argv[]) {
   	
   allegro_init();
+  pthread_mutex_init(&sem, 0);
+  pthread_create(hilos, NULL, sumar, NULL);
   while(game){
     start_game();
     rebuild_game(); 

@@ -1,2 +1,2 @@
 pacman:
-	gcc -o main acuesqmur.c `allegro-config --libs`
+	gcc acuesqmur.c -o main -lpthread `allegro-config --libs` 

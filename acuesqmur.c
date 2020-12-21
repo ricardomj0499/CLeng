@@ -27,7 +27,7 @@ int posy = 20*16;
 int asustados = 0; 
 int game = 1;
 
-char tablero[FILASMAX][COLMAX] = {
+/*char tablero[FILASMAX][COLMAX] = {
 "XXXXXXXXXXXXXXXXXXX",
 "XCCCCCCXCCCXCCCCCCX",
 "XCXXCXCXCXCXCXCXXCX",
@@ -49,6 +49,56 @@ char tablero[FILASMAX][COLMAX] = {
 "XCXCCCCXCCCXCCCCXCX",
 "XCXXXXCXXXXXCXXXXCX",
 "XCCCCCCCCCCCCCCCCCX",
+"XXXXXXXXXXXXXXXXXXX"
+};*/
+
+char tablero[FILASMAX][COLMAX] = {
+"XXXXXXXXXXXXXXXXXXX",
+"X      X   X      X",
+"X XX X X X X X XX X",
+"X    X   X   X    X",
+"X XX XXX X XXX XX X",
+"X X      X      X X",
+"X X XX XXXXX XX X X",
+"A                 A",
+"X XX X XXXXX X XX X",
+"X XX X XAAAX X XX X",
+"X    X XXXXX X    X",
+"X XX X       X XX X",
+"X  X X XXXXX X X  X",
+"XX X     X     X XX",
+"A  X XXX X XXX X  A",
+"X XX X   X   X XX X",
+"X    X X   X X    X",
+"X X XX X X X XX X X",
+"X X    X   X    X X",
+"X XXXX XXXXX XXXX X",
+"X        C        X",
+"XXXXXXXXXXXXXXXXXXX"
+};
+
+char tableroAux[FILASMAX][COLMAX] = {
+"XXXXXXXXXXXXXXXXXXX",
+"X      X   X      X",
+"X XX X X X X X XX X",
+"X    X   X   X    X",
+"X XX XXX X XXX XX X",
+"X X      X      X X",
+"X X XX XXXXX XX X X",
+"A                 A",
+"X XX X XXXXX X XX X",
+"X XX X XAAAX X XX X",
+"X    X XXXXX X    X",
+"X XX X       X XX X",
+"X  X X XXXXX X X  X",
+"XX X     X     X XX",
+"A  X XXX X XXX X  A",
+"X XX X   X   X XX X",
+"X    X X   X X    X",
+"X X XX X X X XX X X",
+"X X    X   X    X X",
+"X XXXX XXXXX XXXX X",
+"X        C        X",
 "XXXXXXXXXXXXXXXXXXX"
 };
 
@@ -159,8 +209,7 @@ void move_pacman(){
 }
 
 void start_game(){
-  openFile();	
-  allegro_init();
+  openFile();
   install_keyboard();
   set_color_depth(32);
   set_gfx_mode(GFX_AUTODETECT_WINDOWED,TAMANOX,TAMANOY,0,0);  
@@ -181,6 +230,7 @@ void start_game(){
     if (key[KEY_ESC]){
       game = 0;
     }
+    
     if(key[KEY_RIGHT]){
     	if(tablero[posy/20][(posx+20)/20] != 'X'){
       		dir  = 1;}
@@ -224,13 +274,14 @@ void start_game(){
           dir = 4;
         }
     }
-
+/*
     for (int i=0;i<=TAMANOY/20;i++){
       for (int j=0; j<=TAMANOX/20;j++){
         printf("%c,",tablero[i][j]);
       }
       printf("\n");
-    }
+    }*/
+
     if(posx<=-20){
         posx=TAMANOX;
     }else if(posx>=TAMANOX){
@@ -254,9 +305,39 @@ void start_game(){
   }
 }
 
+void rebuild_game(){
+  dir = 4;
+  posx = 20*9;
+  posy = 20*16;
+  asustados = 0;
+  for (int i = 0;i<FILASMAX;i++){
+      for(int j =0; j<COLMAX;j++){
+        tablero[i][j] = tableroAux[i][j];
+      }
+  }
+}
+
 int main(int argc, char *argv[]) {
+  openFile();	
+  allegro_init();
+  install_keyboard();
+  set_color_depth(32);
+  set_gfx_mode(GFX_AUTODETECT_WINDOWED,TAMANOX,TAMANOY,0,0);  
+  buffer = create_bitmap(TAMANOX,TAMANOY);
+  muro = load_bitmap("assets/brick.bmp",NULL);
+  muroFondo = load_bitmap("assets/brick_fondo.bmp",NULL);
+  pacman_izq = load_bitmap("assets/pac_izq.bmp",NULL);
+  pacman_der = load_bitmap("assets/pac_der.bmp",NULL);
+  pacman_up = load_bitmap("assets/pac_up.bmp",NULL);
+  pacman_down = load_bitmap("assets/pac_down.bmp",NULL);
+  pacman_stop = load_bitmap("assets/pac_stop.bmp",NULL);
+  pacbuff = create_bitmap(20,20);
+  cocos = load_bitmap("assets/comida.bmp",NULL);
+  semilla = load_bitmap("assets/semilla.bmp",NULL);
+
   while(game){
     start_game();
+    rebuild_game(); 
   }
   
 

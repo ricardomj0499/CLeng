@@ -27,6 +27,7 @@ int posy = 20*16;
 int asustados = 0; 
 int game = 1;
 
+//Tablero de juego actual
 char tablero[FILASMAX][COLMAX] = {
 "XXXXXXXXXXXXXXXXXXX",
 "XCCCCCCXCCCXCCCCCCX",
@@ -52,6 +53,7 @@ char tablero[FILASMAX][COLMAX] = {
 "XXXXXXXXXXXXXXXXXXX"
 };
 
+//Tablero base para para reiniciar cada nivel
 char tableroAux[FILASMAX][COLMAX] = {
 "XXXXXXXXXXXXXXXXXXX",
 "XCCCCCCXCCCXCCCCCCX",

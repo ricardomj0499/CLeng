@@ -1,4 +1,4 @@
- #include <allegro.h>
+#include <allegro.h>
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -27,7 +27,7 @@ int posy = 20*16;
 int asustados = 0; 
 int game = 1;
 
-/*char tablero[FILASMAX][COLMAX] = {
+char tablero[FILASMAX][COLMAX] = {
 "XXXXXXXXXXXXXXXXXXX",
 "XCCCCCCXCCCXCCCCCCX",
 "XCXXCXCXCXCXCXCXXCX",
@@ -50,8 +50,33 @@ int game = 1;
 "XCXXXXCXXXXXCXXXXCX",
 "XCCCCCCCCCCCCCCCCCX",
 "XXXXXXXXXXXXXXXXXXX"
-};*/
+};
 
+char tableroAux[FILASMAX][COLMAX] = {
+"XXXXXXXXXXXXXXXXXXX",
+"XCCCCCCXCCCXCCCCCCX",
+"XCXXCXCXCXCXCXCXXCX",
+"XCCCCXCCCXCCCXCCCCX",
+"XCXXCXXXCXCXXXCXXCX",
+"XCXCCCCCCXCCCCCCXCX",
+"XCXCXXCXXXXXCXXCXCX",
+"ACCCCCCCCCCCCCCCCCA",
+"XCXXCXCXXXXXCXCXXCX",
+"XCXXCXCXAAAXCXCXXCX",
+"XCCCCXCXXXXXCXCCCCX",
+"XCXXCXCCCCCCCXCXXCX",
+"XCCXCXCXXXXXCXCXCCX",
+"XXCXCCCCCXCCCCCXCXX",
+"ACCXCXXXCXCXXXCXCCA",
+"XCXXCXCCCXCCCXCXXCX",
+"XCCCCXCXCCCXCXCCCCX",
+"XCXCXXCXCXCXCXXCXCX",
+"XCXCCCCXCCCXCCCCXCX",
+"XCXXXXCXXXXXCXXXXCX",
+"XCCCCCCCCCCCCCCCCCX",
+"XXXXXXXXXXXXXXXXXXX"
+};
+/*
 char tablero[FILASMAX][COLMAX] = {
 "XXXXXXXXXXXXXXXXXXX",
 "X      X   X      X",
@@ -100,9 +125,9 @@ char tableroAux[FILASMAX][COLMAX] = {
 "X XXXX XXXXX XXXX X",
 "X        C        X",
 "XXXXXXXXXXXXXXXXXXX"
-};
+};*/
 
-
+//
 void cooldown(float seconds)
 {
     clock_t start = clock();
@@ -114,6 +139,7 @@ void cooldown(float seconds)
     } while(elapsed < period);
 }
 
+//funcion qeu se encarga de dibujar en el bufer las imagenes respectivas segun la matriz "tablero"
 void dibujar_tablero(){
   int i;
   int j;
@@ -142,6 +168,8 @@ void dibujar_tablero(){
   }
 }
 
+//Funcion que se encarga de abrir el archivo de configuracion "Config.txt" donde ingresa la informacion 
+//de la velocidad del pacman y los fantasmas, y la dispocionon de semillas en el mapa
 void openFile(){
 
 	//open and get the file handle
@@ -177,8 +205,9 @@ void openFile(){
 	printf("%d\n", dd);
 }
 
-
-int restar(){
+//funcion que verifica si el pacman ya se comio todos los cocos
+//retorna 0 si no se los ha comido todos o 1 si ya estan todos comidos
+int restart(){
 	for(int i = 0; i< FILASMAX; i++){
     	for(int j = 0; j<COLMAX; j++){
      		if (tablero[i][j] == 'C') {
@@ -189,12 +218,12 @@ int restar(){
     return 1;
 }
 
-
-
+//Funcion que muestra el contenido del bufer en la pantalla
 void show_pantalla(){
   blit(buffer,screen,0,0,0,0,TAMANOX,TAMANOY);
 }
 
+//Funcion que dibuja al pacman segun en la direccion en la se dirija
 void move_pacman(){
   if(dir == 0){
     blit(pacman_izq,pacbuff,0,0,0,0,20,20);
@@ -208,6 +237,7 @@ void move_pacman(){
   draw_sprite(buffer,pacbuff,posx,posy);
 }
 
+//Funcion que mantienen el ciclo de juego por cada nivel
 void start_game(){
   openFile();
   install_keyboard();
@@ -225,7 +255,7 @@ void start_game(){
   cocos = load_bitmap("assets/comida.bmp",NULL);
   semilla = load_bitmap("assets/semilla.bmp",NULL);
 
-  while(game && !restar()){
+  while(game && !restart()){
     
     if (key[KEY_ESC]){
       game = 0;
@@ -233,17 +263,18 @@ void start_game(){
     
     if(key[KEY_RIGHT]){
     	if(tablero[posy/20][(posx+20)/20] != 'X'){
-      		dir  = 1;}
+      		dir  = 1;
+      }
     }else if(key[KEY_UP]){
     	if(tablero[(posy-20)/20][posx/20] != 'X'){
     		dir = 2;}
     }else if(key[KEY_DOWN]){
-    	if(tablero[(posy+20)/20][posx/20] != 'X'){
-    		dir = 3;}
-    }else if(key[KEY_LEFT]){
-    	if(tablero[posy/20][(posx-20)/20] != 'X'){
-    		dir = 0;}
-    }
+    	  if(tablero[(posy+20)/20][posx/20] != 'X'){
+    		  dir = 3;}
+        }else if(key[KEY_LEFT]){
+    	    if(tablero[posy/20][(posx-20)/20] != 'X'){
+    		    dir = 0;
+          }}
 
 
     if(dir == 0) {
@@ -274,13 +305,13 @@ void start_game(){
           dir = 4;
         }
     }
-/*
+
     for (int i=0;i<=TAMANOY/20;i++){
       for (int j=0; j<=TAMANOX/20;j++){
         printf("%c,",tablero[i][j]);
       }
       printf("\n");
-    }*/
+    }printf("\n\n\n");
 
     if(posx<=-20){
         posx=TAMANOX;
@@ -305,6 +336,7 @@ void start_game(){
   }
 }
 
+//Funcion que setea las variables iniciales para empezar un nivel nuevo
 void rebuild_game(){
   dir = 4;
   posx = 20*9;
@@ -317,24 +349,10 @@ void rebuild_game(){
   }
 }
 
+//Funcion principal, que mantienen el ciclo principal del juego
 int main(int argc, char *argv[]) {
-  openFile();	
+  	
   allegro_init();
-  install_keyboard();
-  set_color_depth(32);
-  set_gfx_mode(GFX_AUTODETECT_WINDOWED,TAMANOX,TAMANOY,0,0);  
-  buffer = create_bitmap(TAMANOX,TAMANOY);
-  muro = load_bitmap("assets/brick.bmp",NULL);
-  muroFondo = load_bitmap("assets/brick_fondo.bmp",NULL);
-  pacman_izq = load_bitmap("assets/pac_izq.bmp",NULL);
-  pacman_der = load_bitmap("assets/pac_der.bmp",NULL);
-  pacman_up = load_bitmap("assets/pac_up.bmp",NULL);
-  pacman_down = load_bitmap("assets/pac_down.bmp",NULL);
-  pacman_stop = load_bitmap("assets/pac_stop.bmp",NULL);
-  pacbuff = create_bitmap(20,20);
-  cocos = load_bitmap("assets/comida.bmp",NULL);
-  semilla = load_bitmap("assets/semilla.bmp",NULL);
-
   while(game){
     start_game();
     rebuild_game(); 

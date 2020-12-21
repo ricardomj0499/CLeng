@@ -1,12 +1,13 @@
 #include <allegro.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 #define FILASMAX 23
 #define COLMAX 20
 #define TAMANOX 380
 #define TAMANOY 440
-#define PACVEL 20
+
 
 BITMAP *buffer = NULL;
 BITMAP *muro = NULL;
@@ -26,6 +27,10 @@ int posx = 20*9;
 int posy = 20*16;
 int asustados = 0; 
 int game = 1;
+float pacvel = 100;
+float fantvel = 100;
+int cantSemillas = 4;
+char formaSemillas[10];
 
 //Tablero de juego actual
 char tablero[FILASMAX][COLMAX] = {
@@ -170,6 +175,54 @@ void dibujar_tablero(){
   }
 }
 
+//Fucion que coloca las semillas segun lo que diga el "Config.txt"
+void coloca_semillas(){
+  formaSemillas[strcspn(formaSemillas, "\n")] = 0;
+
+  if(strcmp(formaSemillas,"normal") == 0){
+    int dist = (FILASMAX*COLMAX)/cantSemillas;
+    for(int i = 0;i<=cantSemillas; i++){
+      int a = dist/FILASMAX;
+      int b = dist-(FILASMAX*a);
+      if (tablero[a][b] != 'C'){
+        if (tablero[a][b+1] == 'C'){
+          tablero[a][b+1]='S';
+        }else if(tablero[a+1][b] == 'C'){
+          tablero[a+1][b]='S';
+        }else if(tablero[a][b-1]=='C'){
+          tablero[a][b-1]='S';
+        }else if(tablero[a-1][b]=='C'){
+          tablero[a-1][b]='S';
+        }
+      }else{
+        tablero[a][b]='S';
+      }
+      dist+= (FILASMAX*COLMAX)/cantSemillas;
+    }
+  }else if (strcmp(formaSemillas,"aleatorio") == 0){
+    srand(time(NULL));
+    for( int i = 0 ; i <= cantSemillas ; i++ ) {
+      int a = rand()%((FILASMAX)-1) + 1;
+      int b = rand()%((COLMAX)-1) + 1;
+      if (tablero[a][b] != 'C'){
+        if (tablero[a][b+1] == 'C'){
+          tablero[a][b+1]='S';
+        }else if(tablero[a+1][b] == 'C'){
+          tablero[a+1][b]='S';
+        }else if(tablero[a][b-1]=='C'){
+          tablero[a][b-1]='S';
+        }else if(tablero[a-1][b]=='C'){
+          tablero[a-1][b]='S';
+        }
+      }else{
+        tablero[a][b]='S';
+      }
+   }
+
+  }
+}
+ 
+
 //Funcion que se encarga de abrir el archivo de configuracion "Config.txt" donde ingresa la informacion 
 //de la velocidad del pacman y los fantasmas, y la dispocionon de semillas en el mapa
 void openFile(){
@@ -180,7 +233,6 @@ void openFile(){
 
 	char a[150];
 	char b[150];
-	char formaSemillas[150];
 	char d[150]; 
 
 	int aa;
@@ -197,14 +249,21 @@ void openFile(){
 	fgets(formaSemillas,150,fh);
 	fgets(d,150,fh);
 
-	aa = atoi(a);
-	bb = atoi(b);
-	dd = atoi(d);
-
+	pacvel = atof(a)/100;
+  fantvel = atof(b)/100;
+  cantSemillas = atoi(d);
+  if (cantSemillas < 4){
+    cantSemillas = 4;
+  }else if(cantSemillas>16){
+    cantSemillas = 16;
+  }
+  printf("%d\n",cantSemillas);
+  coloca_semillas();
+/*
 	printf("%d\n", aa);
 	printf("%d\n", bb);
 	printf("%s", formaSemillas);
-	printf("%d\n", dd);
+	printf("%d\n", dd);*/
 }
 
 //funcion que verifica si el pacman ya se comio todos los cocos
@@ -256,6 +315,7 @@ void start_game(){
   pacbuff = create_bitmap(20,20);
   cocos = load_bitmap("assets/comida.bmp",NULL);
   semilla = load_bitmap("assets/semilla.bmp",NULL);
+  
 
   while(game && !restart()){
     
@@ -281,40 +341,40 @@ void start_game(){
 
     if(dir == 0) {
       if(tablero[posy/20][(posx-20)/20] != 'X'){
-        posx-=PACVEL;
+        posx-=20;
         }else{
           dir = 4;
         }
     }
     if(dir == 1) {
       if(tablero[posy/20][(posx+20)/20] != 'X'){
-        posx+=PACVEL;
+        posx+=20;
         }else{
           dir = 4;
         }
     }
     if(dir == 2) {
       if(tablero[(posy-20)/20][posx/20] != 'X'){
-        posy-=PACVEL;
+        posy-=20;
         }else{
           dir = 4;
         }    
     }
     if(dir == 3) {
       if(tablero[(posy+20)/20][posx/20] != 'X'){
-        posy+=PACVEL;
+        posy+=20;
         }else{
           dir = 4;
         }
     }
-
+/*
     for (int i=0;i<=TAMANOY/20;i++){
       for (int j=0; j<=TAMANOX/20;j++){
         printf("%c,",tablero[i][j]);
       }
       printf("\n");
     }printf("\n\n\n");
-
+*/
     if(posx<=-20){
         posx=TAMANOX;
     }else if(posx>=TAMANOX){
@@ -328,7 +388,7 @@ void start_game(){
     dibujar_tablero();
     move_pacman();
     show_pantalla();
-    cooldown(0.15);}
+    cooldown(0.15/pacvel);}
 
     clear(pacbuff);
     blit(pacman_stop,pacbuff,0,0,0,0,20,20);
@@ -350,6 +410,8 @@ void rebuild_game(){
       }
   }
 }
+
+
 
 //Funcion principal, que mantienen el ciclo principal del juego
 int main(int argc, char *argv[]) {

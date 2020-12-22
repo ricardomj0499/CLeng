@@ -9,6 +9,7 @@
 #define TAMANOX 380
 #define TAMANOY 440
 
+struct timespec timAzul, timNaranja;
 
 BITMAP *buffer = NULL;
 BITMAP *muro = NULL;
@@ -23,7 +24,9 @@ BITMAP *pacbuff = NULL;
 BITMAP *cocos = NULL;
 BITMAP *semilla = NULL;
 BITMAP *naranja = NULL;
+BITMAP *azul = NULL;
 BITMAP *naranjabuff = NULL;
+BITMAP *azulbuff = NULL;
 BITMAP *pared = NULL;
 
 
@@ -33,13 +36,16 @@ int dir = 4;
 int pacPosx = 20*9;
 int pacPosy = 20*16;
 int naranjaPosx = 20*10;
-int naranjaPosy = 20*9;
+int naranjaPosy = 20*7;
+int azulPosx = 20*9;
+int azulPosy = 20*7;
 int asustados = 0; 
 int game = 1;
 float pacvel = 100;
 float fantvel = 100;
 int cantSemillas = 4;
 char formaSemillas[10];
+int fantDir = 0;
 
 //Tablero de juego actual
 char tablero[FILASMAX][COLMAX] = {
@@ -52,7 +58,7 @@ char tablero[FILASMAX][COLMAX] = {
 "XCXCXXCXXXXXCXXCXCX",
 " ACAACACCFCCACAACA ",
 "XCXXCXCXDDDXCXCXXCX",
-"XCXXCXCXFFFXCXCXXCX",
+"XCXXCXCXJJJXCXCXXCX",
 "XACCAXCXXXXXCXACCAX",
 "XCXXCXACCCCCAXCXXCX",
 "XCCXCXCXXXXXCXCXCCX",
@@ -163,7 +169,7 @@ void dibujar_tablero(){
     for(j = 0; j<COLMAX; j++){
       if (tablero[i][j] == 'X'){
         draw_sprite(buffer,muro,j*20,i*20);
-      }else if(tablero[i][j] == 'C' || tablero[i][j] == 'A'){
+      }else if(tablero[i][j] == 'C'){
         if(pacPosy/20 == i && pacPosx/20  == j){
           tablero[i][j] = ' ';
           asustados = 100;
@@ -179,6 +185,13 @@ void dibujar_tablero(){
         }  
       }else if(tablero[i][j] == 'D'){
           draw_sprite(buffer,pared,j*20,i*20);
+        }else if(tablero[i][j] == 'A'){
+          if(pacPosy/20 == i && pacPosx/20  == j){
+            tablero[i][j] = 'J';
+            asustados = 100;
+          }else{
+            draw_sprite(buffer,cocos,j*20,i*20);
+          }  
         }else{
         draw_sprite(buffer,muroFondo,j*20,i*20);
       }
@@ -269,8 +282,9 @@ void openFile(){
   }else if(cantSemillas>16){
     cantSemillas = 16;
   }
-  //printf("%d\n",cantSemillas);
   coloca_semillas();
+  //printf("%d\n",cantSemillas);
+  
 /*
 	printf("%d\n", aa);
 	printf("%d\n", bb);
@@ -310,12 +324,96 @@ void move_pacman(){
   draw_sprite(buffer,pacbuff,pacPosx,pacPosy);
 }
 
+void mover_fant_azul(){
+  
+  if (tablero[azulPosy/20][azulPosx/20]=='A' || tablero[azulPosy/20][naranjaPosx/20]=='J'){
+    fantDir = rand() %4;
+  }else if (tablero[azulPosy/20][(azulPosx-20)/20] == 'X'){
+    fantDir = rand() %4;
+  }else if(tablero[azulPosy/20][(azulPosx+20)/20] != 'X'){
+    fantDir = rand() %4;
+  }else if(tablero[(azulPosy-20)/20][azulPosx/20] != 'X'){
+    fantDir = rand() %4;
+  }else if(tablero[(azulPosy+20)/20][azulPosx/20] != 'X'){
+    fantDir = rand() %4;
+  }
+
+  if(fantDir == 0) {
+    if(tablero[azulPosy/20][(azulPosx-20)/20] != 'X'){
+      azulPosx-=20;
+    }
+  }else if(fantDir == 1) {
+    if(tablero[azulPosy/20][(azulPosx+20)/20] != 'X'){
+      azulPosx+=20;
+    }
+  }else if(fantDir == 2) {
+    if(tablero[(azulPosy-20)/20][azulPosx/20] != 'X'){
+      azulPosy-=20;
+    } 
+  }else if(fantDir == 3) {
+    if(tablero[(azulPosy+20)/20][azulPosx/20] != 'X'){
+      azulPosy+=20;
+    }
+  }
+
+  nanosleep(&timAzul, NULL);
+  clear(azulbuff);
+  blit(azul,azulbuff,0,0,0,0,20,20);
+  draw_sprite(buffer,azulbuff,azulPosx,azulPosy);
+  show_pantalla();
+  nanosleep(&timNaranja, NULL);
+  cooldown(0.25);
+  
+
+  
+}
+
+void mover_fant_naranja(){
+  
+  if (tablero[naranjaPosy/20][naranjaPosx/20]=='A' || tablero[naranjaPosy/20][naranjaPosx/20]=='J'){
+    fantDir = rand() %4;
+  }else if (tablero[naranjaPosy/20][(naranjaPosx-20)/20] == 'X'){
+    fantDir = rand() %4;
+  }else if(tablero[naranjaPosy/20][(naranjaPosx+20)/20] != 'X'){
+    fantDir = rand() %4;
+  }else if(tablero[(naranjaPosy-20)/20][naranjaPosx/20] != 'X'){
+    fantDir = rand() %4;
+  }else if(tablero[(naranjaPosy+20)/20][naranjaPosx/20] != 'X'){
+    fantDir = rand() %4;
+  }
+
+  if(fantDir == 0) {
+    if(tablero[naranjaPosy/20][(naranjaPosx-20)/20] != 'X'){
+      naranjaPosx-=20;
+    }
+  }else if(fantDir == 1) {
+    if(tablero[naranjaPosy/20][(naranjaPosx+20)/20] != 'X'){
+      naranjaPosx+=20;
+    }
+  }else if(fantDir == 2) {
+    if(tablero[(naranjaPosy-20)/20][naranjaPosx/20] != 'X'){
+      naranjaPosy-=20;
+    } 
+  }else if(fantDir == 3) {
+    if(tablero[(naranjaPosy+20)/20][naranjaPosx/20] != 'X'){
+      naranjaPosy+=20;
+    }
+  }
+
+  
+  clear(naranjabuff);
+  blit(naranja,naranjabuff,0,0,0,0,20,20);
+  draw_sprite(buffer,naranjabuff,naranjaPosx,naranjaPosy);
+  show_pantalla();
+  nanosleep(&timNaranja, NULL);
+  cooldown((0.15/fantvel)*0.8);
+}
+
 void *pacMan (){
    while(game && !restart()){
     
     if (key[KEY_ESC]){
       game = 0;
-      pthread_exit(NULL);
     }
     
     if(key[KEY_RIGHT]){
@@ -327,11 +425,13 @@ void *pacMan (){
     		dir = 2;}
     }else if(key[KEY_DOWN]){
     	  if(tablero[(pacPosy+20)/20][pacPosx/20] != 'X' && tablero[(pacPosy+20)/20][pacPosx/20] != 'D'){
-    		  dir = 3;}
-        }else if(key[KEY_LEFT]){
-    	    if(tablero[pacPosy/20][(pacPosx-20)/20] != 'X' && tablero[pacPosy/20][(pacPosx-20)/20] != 'D'){
-    		    dir = 0;
-          }}
+    		  dir = 3;
+        }
+    }else if(key[KEY_LEFT]){
+    	  if(tablero[pacPosy/20][(pacPosx-20)/20] != 'X' && tablero[pacPosy/20][(pacPosx-20)/20] != 'D'){
+    		  dir = 0;
+        }
+    }
 
 
     if(dir == 0) {
@@ -382,26 +482,43 @@ void *pacMan (){
     clear(pacbuff);
     dibujar_tablero();
     move_pacman();
+    draw_sprite(buffer,naranjabuff,naranjaPosx,naranjaPosy);
+    draw_sprite(buffer,azulbuff,azulPosx,azulPosy);
     show_pantalla();
     //printf("%f\n",pacvel);
     cooldown(0.15/pacvel);}
 
     clear(pacbuff);
     blit(pacman_stop,pacbuff,0,0,0,0,20,20);
+    draw_sprite(buffer,naranjabuff,naranjaPosx,naranjaPosy);
+    draw_sprite(buffer,azulbuff,azulPosx,azulPosy);
     draw_sprite(buffer,pacbuff,pacPosx,pacPosy);
     show_pantalla();
     cooldown(0.075);
   }
 }
 
-void *fantNaranja(){
+void *fantAzul(){
   while(game && !restart()){
-    
     if (key[KEY_ESC]){
       game = 0;
-      pthread_exit(NULL);
     }
-  draw_sprite(buffer,naranjabuff,naranjaPosx,naranjaPosy);
+
+
+    mover_fant_azul();
+  
+  }
+}
+
+void *fantNaranja(){
+  while(game && !restart()){
+    if (key[KEY_ESC]){
+      game = 0;
+    }
+
+
+    mover_fant_naranja();
+  
   }
 }
 //Funcion que mantienen el ciclo de juego por cada nivel
@@ -409,6 +526,7 @@ void start_game(){
   
   pthread_create(hilos, NULL, pacMan, NULL);
   pthread_create(hilos+1, NULL, fantNaranja, NULL);
+  pthread_create(hilos+2, NULL, fantAzul, NULL);
   
   
   pthread_join(hilos[0],NULL);
@@ -426,17 +544,19 @@ void rebuild_game(){
         tablero[i][j] = tableroAux[i][j];
       }
   }
+  coloca_semillas();
 }
 
-
-void *sumar(){
-  for (int i=0;i<40;i++){
-  printf("test\n");}
-}
 //Funcion principal, que mantienen el ciclo principal del juego
 int main(int argc, char *argv[]) {
-  
   openFile();
+  timNaranja.tv_sec = fantvel+(fantvel*0.8);
+  timNaranja.tv_nsec = 0;
+
+  timAzul.tv_sec = fantvel;
+  timAzul.tv_nsec = 0;
+  
+  
   allegro_init();
   install_keyboard();
   set_color_depth(32);
@@ -450,13 +570,15 @@ int main(int argc, char *argv[]) {
   pacman_down = load_bitmap("assets/pac_down.bmp",NULL);
   pacman_stop = load_bitmap("assets/pac_stop.bmp",NULL);
   naranja = load_bitmap("assets/fantasma_naranja.bmp",NULL);
+  azul = load_bitmap("assets/fantasma_azul.bmp",NULL);
   pared = load_bitmap("assets/pared.bmp",NULL);
   pacbuff = create_bitmap(20,20);
   naranjabuff = create_bitmap(20,20);
+  azulbuff = create_bitmap(20,20);
   cocos = load_bitmap("assets/comida.bmp",NULL);
   semilla = load_bitmap("assets/semilla.bmp",NULL);
   blit(naranja,naranjabuff,0,0,0,0,20,20);
- 
+ blit(azul,azulbuff,0,0,0,0,20,20);
   
   while(game){
     start_game();

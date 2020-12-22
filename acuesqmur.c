@@ -324,6 +324,7 @@ void move_pacman(){
   draw_sprite(buffer,pacbuff,pacPosx,pacPosy);
 }
 
+//Funcion que se encarga de la inteligencia del fantasma azul
 void mover_fant_azul(){
   
   if (tablero[azulPosy/20][azulPosx/20]=='A' || tablero[azulPosy/20][naranjaPosx/20]=='J'){
@@ -368,6 +369,7 @@ void mover_fant_azul(){
   
 }
 
+//Funcion que se encarga de la inteligencia del fantasma naranja
 void mover_fant_naranja(){
   
   if (tablero[naranjaPosy/20][naranjaPosx/20]=='A' || tablero[naranjaPosy/20][naranjaPosx/20]=='J'){
@@ -409,6 +411,7 @@ void mover_fant_naranja(){
   cooldown((0.15/fantvel)*0.8);
 }
 
+//Funcion que tiene el ciclo que va a utilizar el hilo encargado del Pac-Man
 void *pacMan (){
    while(game && !restart()){
     
@@ -498,6 +501,7 @@ void *pacMan (){
   }
 }
 
+//Funcion que tiene el ciclo que va a utilizar el hilo encargado del fantasma Azul
 void *fantAzul(){
   while(game && !restart()){
     if (key[KEY_ESC]){
@@ -510,6 +514,7 @@ void *fantAzul(){
   }
 }
 
+//Funcion que tiene el ciclo que va a utilizar el hilo encargado del fantasma Naranja
 void *fantNaranja(){
   while(game && !restart()){
     if (key[KEY_ESC]){
@@ -521,6 +526,7 @@ void *fantNaranja(){
   
   }
 }
+
 //Funcion que mantienen el ciclo de juego por cada nivel
 void start_game(){
   

@@ -541,10 +541,15 @@ void start_game(){
 
 //Funcion que setea las variables iniciales para empezar un nivel nuevo
 void rebuild_game(){
-  dir = 4;
-  pacPosx = 20*9;
-  pacPosy = 20*16;
-  asustados = 0;
+ dir = 4;
+ pacPosx = 20*9;
+ pacPosy = 20*16;
+ naranjaPosx = 20*10;
+ naranjaPosy = 20*7;
+ azulPosx = 20*9;
+ azulPosy = 20*7;
+ fantDir = 0;
+  
   for (int i = 0;i<FILASMAX;i++){
       for(int j =0; j<COLMAX;j++){
         tablero[i][j] = tableroAux[i][j];

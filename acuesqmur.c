@@ -26,9 +26,9 @@ BITMAP *naranja = NULL;
 BITMAP *naranjabuff = NULL;
 BITMAP *pared = NULL;
 
-pthread_t hilos[4];
-pthread_mutex_t sem;
 
+
+pthread_t hilos[4];
 int dir = 4;
 int pacPosx = 20*9;
 int pacPosy = 20*16;
@@ -44,52 +44,52 @@ char formaSemillas[10];
 //Tablero de juego actual
 char tablero[FILASMAX][COLMAX] = {
 "XXXXXXXXXXXXXXXXXXX",
-"XCCCCCCXCCCXCCCCCCX",
+"XCCCACCXCCCXCCACCCX",
 "XCXXCXCXCXCXCXCXXCX",
-"XCCCCXCCCXCCCXCCCCX",
+"XACCAXCCAXACCXACCAX",
 "XCXXCXXXCXCXXXCXXCX",
-"XCXCCCCCCXCCCCCCXCX",
+"XCXCACACCXCCACACXCX",
 "XCXCXXCXXXXXCXXCXCX",
-"ACCCCCCCCCCCCCCCCCA",
+" ACAACACCFCCACAACA ",
 "XCXXCXCXDDDXCXCXXCX",
-"XCXXCXCXAAAXCXCXXCX",
-"XCCCCXCXXXXXCXCCCCX",
-"XCXXCXCCCCCCCXCXXCX",
+"XCXXCXCXFFFXCXCXXCX",
+"XACCAXCXXXXXCXACCAX",
+"XCXXCXACCCCCAXCXXCX",
 "XCCXCXCXXXXXCXCXCCX",
-"XXCXCCCCCXCCCCCXCXX",
-"ACCXCXXXCXCXXXCXCCA",
-"XCXXCXCCCXCCCXCXXCX",
-"XCCCCXCXCCCXCXCCCCX",
+"XXCXACACCXCCACAXCXX",
+" ACXCXXXCXCXXXCXCA ",
+"XCXXCXCCCXACCXCXXCX",
+"XACACXCXACAXCXCACAX",
 "XCXCXXCXCXCXCXXCXCX",
-"XCXCCCCXCCCXCCCCXCX",
+"XCXCCCAXCCCXACCCXCX",
 "XCXXXXCXXXXXCXXXXCX",
-"XCCCCCCCCCCCCCCCCCX",
+"XCCCCCACCCCCACCCCCX",
 "XXXXXXXXXXXXXXXXXXX"
 };
 
 //Tablero base para para reiniciar cada nivel
 char tableroAux[FILASMAX][COLMAX] = {
 "XXXXXXXXXXXXXXXXXXX",
-"XCCCCCCXCCCXCCCCCCX",
+"XCCCACCXCCCXCCACCCX",
 "XCXXCXCXCXCXCXCXXCX",
-"XCCCCXCCCXCCCXCCCCX",
+"XACCAXCCAXACCXACCAX",
 "XCXXCXXXCXCXXXCXXCX",
-"XCXCCCCCCXCCCCCCXCX",
+"XCXCACACCXCCACACXCX",
 "XCXCXXCXXXXXCXXCXCX",
-"ACCCCCCCCCCCCCCCCCA",
+" ACAACACCFCCACAACA ",
 "XCXXCXCXDDDXCXCXXCX",
-"XCXXCXCXAAAXCXCXXCX",
-"XCCCCXCXXXXXCXCCCCX",
-"XCXXCXCCCCCCCXCXXCX",
+"XCXXCXCXFFFXCXCXXCX",
+"XACCAXCXXXXXCXACCAX",
+"XCXXCXACCCCCAXCXXCX",
 "XCCXCXCXXXXXCXCXCCX",
-"XXCXCCCCCXCCCCCXCXX",
-"ACCXCXXXCXCXXXCXCCA",
-"XCXXCXCCCXCCCXCXXCX",
-"XCCCCXCXCCCXCXCCCCX",
+"XXCXACACCXCCACAXCXX",
+" ACXCXXXCXCXXXCXCA ",
+"XCXXCXCCCXACCXCXXCX",
+"XACACXCXACAXCXCACAX",
 "XCXCXXCXCXCXCXXCXCX",
-"XCXCCCCXCCCXCCCCXCX",
+"XCXCCCAXCCCXACCCXCX",
 "XCXXXXCXXXXXCXXXXCX",
-"XCCCCCCCCCCCCCCCCCX",
+"XCCCCCACCCCCACCCCCX",
 "XXXXXXXXXXXXXXXXXXX"
 };
 /*
@@ -101,20 +101,20 @@ char tablero[FILASMAX][COLMAX] = {
 "X XX XXX X XXX XX X",
 "X X      X      X X",
 "X X XX XXXXX XX X X",
-"A                 A",
-"X XX X XXXXX X XX X",
-"X XX X XAAAX X XX X",
+"         F         ",
+"X XX X XDDDX X XX X",
+"X XX X XFFFX X XX X",
 "X    X XXXXX X    X",
 "X XX X       X XX X",
 "X  X X XXXXX X X  X",
 "XX X     X     X XX",
-"A  X XXX X XXX X  A",
+"   X XXX X XXX X   ",
 "X XX X   X   X XX X",
 "X    X X   X X    X",
 "X X XX X X X XX X X",
 "X X    X   X    X X",
 "X XXXX XXXXX XXXX X",
-"X        C        X",
+"XC                X",
 "XXXXXXXXXXXXXXXXXXX"
 };
 
@@ -126,24 +126,24 @@ char tableroAux[FILASMAX][COLMAX] = {
 "X XX XXX X XXX XX X",
 "X X      X      X X",
 "X X XX XXXXX XX X X",
-"A                 A",
-"X XX X XXXXX X XX X",
-"X XX X XAAAX X XX X",
+"         F         ",
+"X XX X XDDDX X XX X",
+"X XX X XFFFX X XX X",
 "X    X XXXXX X    X",
 "X XX X       X XX X",
 "X  X X XXXXX X X  X",
 "XX X     X     X XX",
-"A  X XXX X XXX X  A",
+"   X XXX X XXX X   ",
 "X XX X   X   X XX X",
 "X    X X   X X    X",
 "X X XX X X X XX X X",
 "X X    X   X    X X",
 "X XXXX XXXXX XXXX X",
-"X        C        X",
+"XC                X",
 "XXXXXXXXXXXXXXXXXXX"
 };*/
 
-//
+//tablero[pacPosy/20][(pacPosx+20)/20] == 'C'
 void cooldown(float seconds)
 {
     clock_t start = clock();
@@ -163,7 +163,7 @@ void dibujar_tablero(){
     for(j = 0; j<COLMAX; j++){
       if (tablero[i][j] == 'X'){
         draw_sprite(buffer,muro,j*20,i*20);
-      }else if(tablero[i][j] == 'C'){
+      }else if(tablero[i][j] == 'C' || tablero[i][j] == 'A'){
         if(pacPosy/20 == i && pacPosx/20  == j){
           tablero[i][j] = ' ';
           asustados = 100;
@@ -261,15 +261,15 @@ void openFile(){
 	fgets(formaSemillas,150,fh);
 	fgets(d,150,fh);
 
-	pacvel = atof(a)/100;
-  fantvel = atof(b)/100;
+	fantvel = atof(a)/100;
+  pacvel = atof(b)/100;
   cantSemillas = atoi(d);
   if (cantSemillas < 4){
     cantSemillas = 4;
   }else if(cantSemillas>16){
     cantSemillas = 16;
   }
-  printf("%d\n",cantSemillas);
+  //printf("%d\n",cantSemillas);
   coloca_semillas();
 /*
 	printf("%d\n", aa);
@@ -308,53 +308,28 @@ void move_pacman(){
     blit(pacman_down,pacbuff,0,0,0,0,20,20);
   }  
   draw_sprite(buffer,pacbuff,pacPosx,pacPosy);
-  draw_sprite(buffer,naranjabuff,naranjaPosx,naranjaPosy);
 }
 
 void *pacMan (){
-  
-}
-
-//Funcion que mantienen el ciclo de juego por cada nivel
-void start_game(){
-  openFile();
-  install_keyboard();
-  set_color_depth(32);
-  set_gfx_mode(GFX_AUTODETECT_WINDOWED,TAMANOX,TAMANOY,0,0);  
-  buffer = create_bitmap(TAMANOX,TAMANOY);
-  muro = load_bitmap("assets/brick.bmp",NULL);
-  muroFondo = load_bitmap("assets/brick_fondo.bmp",NULL);
-  pacman_izq = load_bitmap("assets/pac_izq.bmp",NULL);
-  pacman_der = load_bitmap("assets/pac_der.bmp",NULL);
-  pacman_up = load_bitmap("assets/pac_up.bmp",NULL);
-  pacman_down = load_bitmap("assets/pac_down.bmp",NULL);
-  pacman_stop = load_bitmap("assets/pac_stop.bmp",NULL);
-  naranja = load_bitmap("assets/fantasma_naranja.bmp",NULL);
-  pared = load_bitmap("assets/pared.bmp",NULL);
-  pacbuff = create_bitmap(20,20);
-  naranjabuff = create_bitmap(20,20);
-  cocos = load_bitmap("assets/comida.bmp",NULL);
-  semilla = load_bitmap("assets/semilla.bmp",NULL);
-  blit(naranja,naranjabuff,0,0,0,0,20,20);
-
-  while(game && !restart()){
+   while(game && !restart()){
     
     if (key[KEY_ESC]){
       game = 0;
+      pthread_exit(NULL);
     }
     
     if(key[KEY_RIGHT]){
-    	if(tablero[pacPosy/20][(pacPosx+20)/20] != 'X'){
+    	if(tablero[pacPosy/20][(pacPosx+20)/20] != 'X' && tablero[pacPosy/20][(pacPosx+20)/20] != 'D'){
       		dir  = 1;
       }
     }else if(key[KEY_UP]){
-    	if(tablero[(pacPosy-20)/20][pacPosx/20] != 'X'){
+    	if(tablero[(pacPosy-20)/20][pacPosx/20] != 'X' && tablero[(pacPosy-20)/20][pacPosx/20] != 'D'){
     		dir = 2;}
     }else if(key[KEY_DOWN]){
-    	  if(tablero[(pacPosy+20)/20][pacPosx/20] != 'X'){
+    	  if(tablero[(pacPosy+20)/20][pacPosx/20] != 'X' && tablero[(pacPosy+20)/20][pacPosx/20] != 'D'){
     		  dir = 3;}
         }else if(key[KEY_LEFT]){
-    	    if(tablero[pacPosy/20][(pacPosx-20)/20] != 'X'){
+    	    if(tablero[pacPosy/20][(pacPosx-20)/20] != 'X' && tablero[pacPosy/20][(pacPosx-20)/20] != 'D'){
     		    dir = 0;
           }}
 
@@ -393,8 +368,8 @@ void start_game(){
         printf("%c,",tablero[i][j]);
       }
       printf("\n");
-    }printf("\n\n\n");
-*/
+    }printf("\n\n\n");*/
+
     if(pacPosx<=-20){
         pacPosx=TAMANOX;
     }else if(pacPosx>=TAMANOX){
@@ -408,6 +383,7 @@ void start_game(){
     dibujar_tablero();
     move_pacman();
     show_pantalla();
+    //printf("%f\n",pacvel);
     cooldown(0.15/pacvel);}
 
     clear(pacbuff);
@@ -416,6 +392,27 @@ void start_game(){
     show_pantalla();
     cooldown(0.075);
   }
+}
+
+void *fantNaranja(){
+  while(game && !restart()){
+    
+    if (key[KEY_ESC]){
+      game = 0;
+      pthread_exit(NULL);
+    }
+  draw_sprite(buffer,naranjabuff,naranjaPosx,naranjaPosy);
+  }
+}
+//Funcion que mantienen el ciclo de juego por cada nivel
+void start_game(){
+  
+  pthread_create(hilos, NULL, pacMan, NULL);
+  pthread_create(hilos+1, NULL, fantNaranja, NULL);
+  
+  
+  pthread_join(hilos[0],NULL);
+  pthread_join(hilos[1],NULL);
 }
 
 //Funcion que setea las variables iniciales para empezar un nivel nuevo
@@ -438,10 +435,29 @@ void *sumar(){
 }
 //Funcion principal, que mantienen el ciclo principal del juego
 int main(int argc, char *argv[]) {
-  	
+  
+  openFile();
   allegro_init();
-  pthread_mutex_init(&sem, 0);
-  pthread_create(hilos, NULL, sumar, NULL);
+  install_keyboard();
+  set_color_depth(32);
+  set_gfx_mode(GFX_AUTODETECT_WINDOWED,TAMANOX,TAMANOY,0,0);  
+  buffer = create_bitmap(TAMANOX,TAMANOY);
+  muro = load_bitmap("assets/brick.bmp",NULL);
+  muroFondo = load_bitmap("assets/brick_fondo.bmp",NULL);
+  pacman_izq = load_bitmap("assets/pac_izq.bmp",NULL);
+  pacman_der = load_bitmap("assets/pac_der.bmp",NULL);
+  pacman_up = load_bitmap("assets/pac_up.bmp",NULL);
+  pacman_down = load_bitmap("assets/pac_down.bmp",NULL);
+  pacman_stop = load_bitmap("assets/pac_stop.bmp",NULL);
+  naranja = load_bitmap("assets/fantasma_naranja.bmp",NULL);
+  pared = load_bitmap("assets/pared.bmp",NULL);
+  pacbuff = create_bitmap(20,20);
+  naranjabuff = create_bitmap(20,20);
+  cocos = load_bitmap("assets/comida.bmp",NULL);
+  semilla = load_bitmap("assets/semilla.bmp",NULL);
+  blit(naranja,naranjabuff,0,0,0,0,20,20);
+ 
+  
   while(game){
     start_game();
     rebuild_game(); 
